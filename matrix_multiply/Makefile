@@ -3,7 +3,7 @@ CXX		 = g++
 CXXFLAGS = -Wall -std=c++17
 TARGET	 = matrix_multiply_challenge
 SRC		 = matrix_multiply_challenge.cpp
-LDLIBS	 = 
+LDLIBS	 = -lpthread
 
 $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) $(LDLIBS) -o $(TARGET)
