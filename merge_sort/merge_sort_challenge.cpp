@@ -3,6 +3,7 @@
  */
 #include <thread>
 #include <future>
+#include <cmath>
 
 /* declaration of merge helper function */
 void merge(int *array, unsigned int left, unsigned int mid, unsigned int right);
@@ -25,15 +26,9 @@ void parallel_merge_sort(int *array, unsigned int left, unsigned int right, unsi
 	/***********************
 	 * YOUR CODE GOES HERE *
 	 ***********************/
-	if (depth > 4)
+	if (depth >= std::log(std::thread::hardware_concurrency()))
 	{
-		if (left < right)
-		{
-			unsigned int mid = (left + right) / 2;				   // find the middle point
-			parallel_merge_sort(array, left, mid, depth + 1);	   // sort the left half
-			parallel_merge_sort(array, mid + 1, right, depth + 1); // sort the right half
-			merge(array, left, mid, right);						   // merge the two sorted halves
-		}
+		sequential_merge_sort(array, left, right); // sort the left half
 	}
 	else
 	{
