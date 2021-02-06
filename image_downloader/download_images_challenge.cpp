@@ -4,6 +4,8 @@
 #include <boost/asio.hpp>
 #include <future>
 #include <cstring>
+#include <string>
+#include <iostream>
 #include <curl/curl.h> // curl support https://curl.haxx.se/
 #include <mutex>
 
@@ -29,7 +31,7 @@ size_t sequential_image_downloader(int num_images)
 size_t parallel_image_downloader(int num_images)
 {
     size_t total_bytes = 0;
-    boost::asio::thread_pool pool(4);
+    boost::asio::thread_pool pool(8);
 
     for (int i = 1; i <= num_images; i++)
     {
@@ -53,7 +55,8 @@ size_t download_image(int image_num)
 {
     char url[] = "http://699340.youcanlearnit.net/imageXXX.jpg";
     sprintf(url, "http://699340.youcanlearnit.net/image%03d.jpg", ((image_num % 50) + 1));
-    printf("Downloading image: http://699340.youcanlearnit.net/image%03d.jpg\n", ((image_num % 50) + 1));
+    printf("\rDownloading image: http://699340.youcanlearnit.net/image%03d.jpg", ((image_num % 50) + 1));
+    fflush(stdout);
     CURLcode res;
     curl_off_t num_bytes = 0;
     CURL *curl = curl_easy_init();
@@ -73,6 +76,7 @@ size_t download_image(int image_num)
         }
         curl_easy_cleanup(curl);
     }
+    printf("\rDownloaded image: http://699340.youcanlearnit.net/image%03d.jpg\n", ((image_num % 50) + 1));
     return num_bytes;
 }
 
@@ -87,7 +91,7 @@ int main()
     const int NUM_EVAL_RUNS = 3;
     const int NUM_IMAGES = 50;
 
-    printf("Evaluating Sequential Implementation...\n");
+    printf("\rEvaluating Sequential Implementation...\n");
     std::chrono::duration<double> sequential_time(0);
     size_t sequential_result = sequential_image_downloader(NUM_IMAGES); // "warm up"
     for (int i = 0; i < NUM_EVAL_RUNS; i++)
@@ -98,7 +102,7 @@ int main()
     }
     sequential_time /= NUM_EVAL_RUNS;
 
-    printf("Evaluating Parallel Implementation...\n");
+    printf("\rEvaluating Parallel Implementation...\n");
     std::chrono::duration<double> parallel_time(0);
     size_t parallel_result = parallel_image_downloader(NUM_IMAGES); // "warm up"
     for (int i = 0; i < NUM_EVAL_RUNS; i++)
@@ -112,9 +116,9 @@ int main()
     // display sequential and parallel results for comparison
     if (sequential_result != parallel_result)
     {
-        printf("ERROR: Result mismatch!\n  Sequential Result = %zd\n  Parallel Result = %zd\n", sequential_result, parallel_result);
+        printf("\rERROR: Result mismatch!\n  Sequential Result = %zd\n  Parallel Result = %zd\n", sequential_result, parallel_result);
     }
-    printf("Average Sequential Time: %.2f ms\n", sequential_time.count() * 1000);
+    printf("\rAverage Sequential Time: %.2f ms\n", sequential_time.count() * 1000);
     printf("  Average Parallel Time: %.2f ms\n", parallel_time.count() * 1000);
     printf("Speedup: %.2f\n", sequential_time / parallel_time);
     printf("Efficiency %.2f%%\n", 100 * (sequential_time / parallel_time) / std::thread::hardware_concurrency());
