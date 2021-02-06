@@ -91,6 +91,8 @@ void merge(int *array, unsigned int left, unsigned int mid, unsigned int right)
 
 int main()
 {
+	printf("hardw_conc: %d log: %f", std::thread::hardware_concurrency(), std::log(std::thread::hardware_concurrency()));
+
 	const int NUM_EVAL_RUNS = 100;
 	const int N = 500000; // number of elements to sort
 
