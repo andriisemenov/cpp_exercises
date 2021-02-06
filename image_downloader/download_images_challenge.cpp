@@ -31,7 +31,7 @@ size_t sequential_image_downloader(int num_images)
 size_t parallel_image_downloader(int num_images)
 {
     size_t total_bytes = 0;
-    boost::asio::thread_pool pool(8);
+    boost::asio::thread_pool pool(50);
 
     for (int i = 1; i <= num_images; i++)
     {
