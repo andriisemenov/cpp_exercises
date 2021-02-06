@@ -3,7 +3,7 @@ CXX		 = g++
 CXXFLAGS = -Wall
 TARGET	 = download_images_challenge
 SRC		 = download_images_challenge.cpp
-LDLIBS	 = -lcurl
+LDLIBS	 = -lcurl -pthread -lboost_system
 
 $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) $(LDLIBS) -o $(TARGET)
